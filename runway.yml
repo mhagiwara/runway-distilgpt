@@ -2,6 +2,9 @@ version: 0.1
 python: 3.7
 entrypoint: python runway_model.py
 framework: pytorch
+spec:
+    cpu: True
+    gpu: False
 build_steps:
     - pip install runway-python
     - pip install -r requirements.txt
