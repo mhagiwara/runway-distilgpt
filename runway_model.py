@@ -1,11 +1,14 @@
+import torch
 import runway
-from runway.data_types import text
+from runway.data_types import number, text
 from distilgpt2_model import DistilGPT2Model
 
 
-@runway.setup(options={})
+@runway.setup(options={'max_len': number(default=1000, min=100, max=5000)})
 def setup(opts):
-    model = DistilGPT2Model()
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    print(f"Using device={device}, max_len={opts['max_len']}")
+    model = DistilGPT2Model(device=device, max_len=opts['max_len'])
     return model
 
 

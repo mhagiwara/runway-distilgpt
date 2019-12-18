@@ -5,19 +5,24 @@ from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
 
 class DistilGPT2Model:
-    def __init__(self):
+    def __init__(self, device='cpu', max_len=1000):
         self.tokenizer = GPT2Tokenizer.from_pretrained('distilgpt2')
         self.model = GPT2LMHeadModel.from_pretrained('distilgpt2')
+        self.device = torch.device(device)
+        self.model.to(self.device)
+        self.model.eval()
         self.sample = True
+        self.max_len = max_len
 
     def generate(self, prompt):
-        context = torch.tensor(self.tokenizer.encode(prompt), dtype=torch.long).unsqueeze(0)
+        context = torch.tensor(self.tokenizer.encode(prompt), dtype=torch.long, device=self.device)
+        context = context.unsqueeze(0)
         generated = context
         prev_token = context
         past = None
 
         with torch.no_grad():
-            for _ in range(1000):
+            for _ in range(self.max_len):
                 next_token_logits, past = self.model(prev_token, past=past)
                 next_token_logits = next_token_logits[:, -1, :]
 
